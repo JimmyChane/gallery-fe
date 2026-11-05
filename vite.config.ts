@@ -18,12 +18,12 @@ async function validateBackendHost(env: Record<string, string>): Promise<string>
   return value;
 }
 
-async function validateAppEnv(env: Record<string, string>): Promise<'uat' | 'prod'> {
-  const envList = ['uat', 'prod'] as const;
+async function validateAppEnv(env: Record<string, string>): Promise<'dev' | 'prod'> {
+  const envList = ['dev', 'prod'] as const;
   type envType = (typeof envList)[number];
 
   if (!envList.includes(env['VITE_APP_ENV'] as envType)) {
-    const list = ['dev', 'uat', 'prod', 'archive'];
+    const list = ['dev', 'dev', 'prod', 'archive'];
     throw new Error(`Missing env "VITE_APP_ENV", expect ${list.join(', ')}, got "${env.VITE_APP_ENV}"}`);
   }
 
