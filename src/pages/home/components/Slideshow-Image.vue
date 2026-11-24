@@ -1,10 +1,22 @@
 <script setup lang="ts">
 import { waitMs } from '@chanzor/utils';
 import { computedAsync, useElementVisibility, useThrottle } from '@vueuse/core';
-import { type StyleValue, computed, onMounted, ref, useTemplateRef, watch } from 'vue';
+import {
+  type StyleValue,
+  computed,
+  onMounted,
+  ref,
+  useTemplateRef,
+  watch,
+} from 'vue';
 
 import { useImageViewerStore } from '@/module/image-viewer/image-viewer.store';
-import { type ColorPaletteData, ImageBlobModel, ImageModel, ImagePathModel } from '@/module/image.model';
+import {
+  type ColorPaletteData,
+  ImageBlobModel,
+  ImageModel,
+  ImagePathModel,
+} from '@/module/image.model';
 
 const { model } = defineProps<{ model: ImageModel }>();
 
@@ -66,8 +78,18 @@ onMounted(() => onTriggerLoad());
 </script>
 
 <template>
-  <div ref="selfRef" class="home-image-content" :style="style" :data-hovering="isHovering">
-    <img v-if="src?.length" :src="src" :class="{ 'is-loaded': isImageLoaded }" @load="() => (isImageLoaded = true)" />
+  <div
+    ref="selfRef"
+    class="home-image-content"
+    :style="style"
+    :data-hovering="isHovering"
+  >
+    <img
+      v-if="src?.length"
+      :src="src"
+      :class="{ 'is-loaded': isImageLoaded }"
+      @load="() => (isImageLoaded = true)"
+    />
   </div>
 </template>
 

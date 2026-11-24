@@ -12,11 +12,20 @@ const debouncedWindowHeight = debouncedRef(windowSize.height, 1_000);
 
 const src = computedAsync<string | undefined>(async () => {
   if (debouncedWindowWidth.value > debouncedWindowHeight.value) {
-    return imageViewerStore.model?.getSrc(debouncedWindowHeight.value, undefined);
+    return imageViewerStore.model?.getSrc(
+      debouncedWindowHeight.value,
+      undefined,
+    );
   } else if (debouncedWindowWidth.value < debouncedWindowHeight.value) {
-    return imageViewerStore.model?.getSrc(undefined, debouncedWindowWidth.value);
+    return imageViewerStore.model?.getSrc(
+      undefined,
+      debouncedWindowWidth.value,
+    );
   } else {
-    return imageViewerStore.model?.getSrc(debouncedWindowWidth.value, debouncedWindowHeight.value);
+    return imageViewerStore.model?.getSrc(
+      debouncedWindowWidth.value,
+      debouncedWindowHeight.value,
+    );
   }
 });
 

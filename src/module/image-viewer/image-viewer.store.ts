@@ -1,5 +1,9 @@
 import { waitFrameMs } from '@chanzor/vue-utils';
-import { type MaybeElement, useElementBounding, useElementSize } from '@vueuse/core';
+import {
+  type MaybeElement,
+  useElementBounding,
+  useElementSize,
+} from '@vueuse/core';
 import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 
@@ -53,7 +57,8 @@ export const useImageViewerStore = defineStore('image-viewer', () => {
   async function close(): Promise<void> {
     const now = (time = Date.now());
 
-    if (model.value) useImageViewerPositionStore().setPositionByModel(model.value);
+    if (model.value)
+      useImageViewerPositionStore().setPositionByModel(model.value);
 
     await waitFrameMs();
     if (now !== time) return;
@@ -67,7 +72,14 @@ export const useImageViewerStore = defineStore('image-viewer', () => {
     model.value = undefined;
   }
 
-  return { state: computed(() => state.value), isActive, isShowing, model: computed(() => model.value), open, close };
+  return {
+    state: computed(() => state.value),
+    isActive,
+    isShowing,
+    model: computed(() => model.value),
+    open,
+    close,
+  };
 });
 
 export const useImageViewerRefStore = defineStore('image-viewer-ref', () => {
@@ -79,25 +91,28 @@ export const useImageViewerRefStore = defineStore('image-viewer-ref', () => {
   return { eleRef, eleWidth, eleHeight, eleLeft, eleTop };
 });
 
-export const useImageViewerPositionStore = defineStore('image-viewer-position', () => {
-  const x = ref(-1);
-  const y = ref(-1);
-  const width = ref(-1);
-  const height = ref(-1);
+export const useImageViewerPositionStore = defineStore(
+  'image-viewer-position',
+  () => {
+    const x = ref(-1);
+    const y = ref(-1);
+    const width = ref(-1);
+    const height = ref(-1);
 
-  function setPositionByModel(model: ImageModel): void {
-    x.value = model.holderPosition.screenX;
-    y.value = model.holderPosition.screenY;
-    width.value = model.holderPosition.width;
-    height.value = model.holderPosition.height;
-  }
+    function setPositionByModel(model: ImageModel): void {
+      x.value = model.holderPosition.screenX;
+      y.value = model.holderPosition.screenY;
+      width.value = model.holderPosition.width;
+      height.value = model.holderPosition.height;
+    }
 
-  return {
-    x: computed(() => x.value),
-    y: computed(() => y.value),
-    width: computed(() => width.value),
-    height: computed(() => height.value),
+    return {
+      x: computed(() => x.value),
+      y: computed(() => y.value),
+      width: computed(() => width.value),
+      height: computed(() => height.value),
 
-    setPositionByModel,
-  };
-});
+      setPositionByModel,
+    };
+  },
+);

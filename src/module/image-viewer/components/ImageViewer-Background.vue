@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { useImageViewerRefStore, useImageViewerStore } from '../image-viewer.store';
+import {
+  useImageViewerRefStore,
+  useImageViewerStore,
+} from '../image-viewer.store';
 
 const imageViewerStore = useImageViewerStore();
 const imageViewerRefStore = useImageViewerRefStore();

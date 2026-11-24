@@ -13,7 +13,11 @@ const dialogStore = useDialogStore();
 
 <template>
   <div class="app">
-    <div v-if="authStore.isInitializing" class="app-auth-loading" style="z-index: 1">
+    <div
+      v-if="authStore.isInitializing"
+      class="app-auth-loading"
+      style="z-index: 1"
+    >
       <div class="spinner"></div>
       <span>Authenticating...</span>
     </div>

@@ -4,27 +4,37 @@ import { type ConfigEnv, defineConfig, loadEnv } from 'vite';
 import ViteInspect from 'vite-plugin-inspect';
 import z, { ZodError } from 'zod';
 
-async function validateBackendHost(env: Record<string, string>): Promise<string> {
+async function validateBackendHost(
+  env: Record<string, string>,
+): Promise<string> {
   const schema = z.url().min(1);
 
-  const value = await schema.parseAsync(env['VITE_BACKEND_HOST']).catch((e: Error) => {
-    if (e instanceof ZodError) {
-      throw new Error(['VITE_BACKEND_HOST:', ...e.flatten().formErrors].join('\n  - '));
-    }
+  const value = await schema
+    .parseAsync(env['VITE_BACKEND_HOST'])
+    .catch((e: Error) => {
+      if (e instanceof ZodError) {
+        throw new Error(
+          ['VITE_BACKEND_HOST:', ...e.flatten().formErrors].join('\n  - '),
+        );
+      }
 
-    throw e;
-  });
+      throw e;
+    });
 
   return value;
 }
 
-async function validateAppEnv(env: Record<string, string>): Promise<'dev' | 'prod'> {
+async function validateAppEnv(
+  env: Record<string, string>,
+): Promise<'dev' | 'prod'> {
   const envList = ['dev', 'prod'] as const;
   type envType = (typeof envList)[number];
 
   if (!envList.includes(env['VITE_APP_ENV'] as envType)) {
     const list = ['dev', 'dev', 'prod', 'archive'];
-    throw new Error(`Missing env "VITE_APP_ENV", expect ${list.join(', ')}, got "${env.VITE_APP_ENV}"}`);
+    throw new Error(
+      `Missing env "VITE_APP_ENV", expect ${list.join(', ')}, got "${env.VITE_APP_ENV}"}`,
+    );
   }
 
   return env.VITE_APP_ENV as envType;
@@ -45,7 +55,9 @@ export default defineConfig(async (mode) => {
 
   return {
     plugins: [vue(), ViteInspect()],
-    resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+    resolve: {
+      alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    },
     server: { port: 3001 },
   };
 });

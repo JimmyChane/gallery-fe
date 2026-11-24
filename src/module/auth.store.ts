@@ -17,13 +17,17 @@ export class UserModel {
 }
 
 function fetchLogin(username: string, password: string) {
-  return axios.post<{ loginToken?: string }>(`${ENV_BACKEND_API_BASE}/auth/login`, { username, password });
+  return axios.post<{ loginToken?: string }>(
+    `${ENV_BACKEND_API_BASE}/auth/login`,
+    { username, password },
+  );
 }
 
 function fetchExchange(loginToken: string) {
-  return axios.post<{ accessToken?: string; refreshToken?: string }>(`${ENV_BACKEND_API_BASE}/auth/exchange`, {
-    loginToken,
-  });
+  return axios.post<{ accessToken?: string; refreshToken?: string }>(
+    `${ENV_BACKEND_API_BASE}/auth/exchange`,
+    { loginToken },
+  );
 }
 
 function fetchGetSelf() {
@@ -59,7 +63,9 @@ export const useAuthStore = defineStore('auth', () => {
       isLogging.value = true;
       error.value = undefined;
 
-      const loginRes = await fetchLogin(username, password).catch((e: Error) => e);
+      const loginRes = await fetchLogin(username, password).catch(
+        (e: Error) => e,
+      );
       if (loginRes instanceof Error) {
         error.value = 'Authentication failed';
         isLogging.value = false;
@@ -67,14 +73,18 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       const loginToken = optString(loginRes.data.loginToken);
-      const exchangeRes = await fetchExchange(loginToken).catch((e: Error) => e);
+      const exchangeRes = await fetchExchange(loginToken).catch(
+        (e: Error) => e,
+      );
       if (exchangeRes instanceof Error) {
         error.value = 'Authentication failed';
         isLogging.value = false;
         return false;
       }
 
-      await authRefreshStore.setRefreshToken(optString(exchangeRes.data.refreshToken));
+      await authRefreshStore.setRefreshToken(
+        optString(exchangeRes.data.refreshToken),
+      );
 
       return true;
     });
@@ -124,7 +134,10 @@ export const useAuthStore = defineStore('auth', () => {
       throw selfRes;
     }
 
-    user.value = new UserModel(optString(selfRes.data.userId), optString(selfRes.data.username));
+    user.value = new UserModel(
+      optString(selfRes.data.userId),
+      optString(selfRes.data.username),
+    );
   }
 
   onMounted(async () => {
@@ -156,9 +169,10 @@ export const useAuthStore = defineStore('auth', () => {
 // REFRESH
 
 function fetchRefresh(refreshToken: string) {
-  return axios.post<{ accessToken?: string; refreshToken?: string }>(`${ENV_BACKEND_API_BASE}/auth/refresh`, {
-    refreshToken,
-  });
+  return axios.post<{ accessToken?: string; refreshToken?: string }>(
+    `${ENV_BACKEND_API_BASE}/auth/refresh`,
+    { refreshToken },
+  );
 }
 
 export const useAuthRefreshStore = defineStore('auth-refresh', () => {
@@ -167,10 +181,16 @@ export const useAuthRefreshStore = defineStore('auth-refresh', () => {
   const isInitializing = ref(true);
 
   const isActive = computed(() => {
-    return !!refreshTokenLocal.value?.length && !!accessTokenLocal.value?.length;
+    return (
+      !!refreshTokenLocal.value?.length && !!accessTokenLocal.value?.length
+    );
   });
 
-  const refreshTokenLocal = useLocalStorage<string | undefined>('refresh', undefined, { writeDefaults: false });
+  const refreshTokenLocal = useLocalStorage<string | undefined>(
+    'refresh',
+    undefined,
+    { writeDefaults: false },
+  );
   const accessTokenLocal = ref<string>();
 
   function clear(): void {
@@ -184,7 +204,9 @@ export const useAuthRefreshStore = defineStore('auth-refresh', () => {
       return;
     }
 
-    const res = await fetchRefresh(refreshTokenLocal.value).catch((e: Error) => e);
+    const res = await fetchRefresh(refreshTokenLocal.value).catch(
+      (e: Error) => e,
+    );
     if (res instanceof AxiosError) {
       if (res.status === 401) clear();
     } else if (res instanceof Error) {

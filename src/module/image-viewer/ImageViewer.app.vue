@@ -10,7 +10,11 @@ import {
 } from '@/module/image-viewer/image-viewer.store.ts';
 
 import { useDownloadImageDialog } from '../download-image/useDownloadImage.dialog.ts';
-import { ImageBlobModel, ImagePathModel, getApiImgDownload } from '../image.model.ts';
+import {
+  ImageBlobModel,
+  ImagePathModel,
+  getApiImgDownload,
+} from '../image.model.ts';
 
 import CloseIcon from '@/components/icon/Close.icon.vue';
 import DownloadIcon from '@/components/icon/Download.icon.vue';
@@ -33,12 +37,16 @@ onClickOutside(
   { ignore: [actionbarRef] },
 );
 
-watch(imageRef, () => (imageViewerRefStore.eleRef = imageRef.value), { immediate: true });
+watch(imageRef, () => (imageViewerRefStore.eleRef = imageRef.value), {
+  immediate: true,
+});
 
 const isDownloadable = computed(() => {
   return (
-    (imageViewerStore.model instanceof ImageBlobModel && imageViewerStore.model.type === 'blob') ||
-    (imageViewerStore.model instanceof ImagePathModel && imageViewerStore.model.type === 'path')
+    (imageViewerStore.model instanceof ImageBlobModel &&
+      imageViewerStore.model.type === 'blob') ||
+    (imageViewerStore.model instanceof ImagePathModel &&
+      imageViewerStore.model.type === 'path')
   );
 });
 
@@ -60,12 +68,20 @@ const { reopen } = useDownloadImageDialog();
     <div class="image-viewer-overlay-body">
       <div ref="actionbarRef" class="image-viewer-overlay-actionbar">
         <div class="actionbar-group left">
-          <button type="button" aria-label="Close viewer" title="Close" @click="() => imageViewerStore.close()">
+          <button
+            type="button"
+            aria-label="Close viewer"
+            title="Close"
+            @click="() => imageViewerStore.close()"
+          >
             <CloseIcon />
           </button>
         </div>
 
-        <div v-if="FEATURE_DOWNLOAD && isDownloadable" class="actionbar-group right">
+        <div
+          v-if="FEATURE_DOWNLOAD && isDownloadable"
+          class="actionbar-group right"
+        >
           <button
             type="button"
             aria-label="Download image"
@@ -73,8 +89,10 @@ const { reopen } = useDownloadImageDialog();
             @click="
               () => {
                 if (
-                  (imageViewerStore.model instanceof ImageBlobModel && imageViewerStore.model.type === 'blob') ||
-                  (imageViewerStore.model instanceof ImagePathModel && imageViewerStore.model.type === 'path')
+                  (imageViewerStore.model instanceof ImageBlobModel &&
+                    imageViewerStore.model.type === 'blob') ||
+                  (imageViewerStore.model instanceof ImagePathModel &&
+                    imageViewerStore.model.type === 'path')
                 ) {
                   if (FEATURE_ADVANCE_DOWNLOAD) {
                     reopen({ model: imageViewerStore.model });

@@ -61,7 +61,11 @@ onUnmounted(() => {
     @click-dismiss="() => dismiss()"
   >
     <div class="overlay-dialog-body">
-      <component ref="componentRef" :is="dialogPopup.component" :dialog-popup="dialogPopup" />
+      <component
+        ref="componentRef"
+        :is="dialogPopup.component"
+        :dialog-popup="dialogPopup"
+      />
     </div>
   </DismissableContainer>
 </template>

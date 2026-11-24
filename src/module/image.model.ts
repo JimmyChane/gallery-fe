@@ -5,12 +5,17 @@ import { ENV_BACKEND_API_BASE } from '@/env';
 
 import { useFileReaderStore } from './file-reader.store';
 
-function queryDimension(option?: { width?: number; height?: number }): URLSearchParams | undefined {
+function queryDimension(option?: {
+  width?: number;
+  height?: number;
+}): URLSearchParams | undefined {
   if (option === undefined) return;
 
   const searchParams = new URLSearchParams();
-  if (typeof option?.width === 'number') searchParams.append('w', option.width.toString());
-  if (typeof option?.height === 'number') searchParams.append('h', option.height.toString());
+  if (typeof option?.width === 'number')
+    searchParams.append('w', option.width.toString());
+  if (typeof option?.height === 'number')
+    searchParams.append('h', option.height.toString());
 
   return searchParams;
 }
@@ -29,7 +34,10 @@ function parseName(filename: string) {
 //   return (ext || 'PNG').toUpperCase();
 // }
 
-export function urlServerFilename(filenameUrl: string, option?: { width?: number; height?: number }) {
+export function urlServerFilename(
+  filenameUrl: string,
+  option?: { width?: number; height?: number },
+) {
   const url = new URL(filenameUrl);
   if (typeof option?.width === 'number') {
     url.searchParams.append('w', option.width.toString());
@@ -56,7 +64,9 @@ export async function getApiImgDownload(
   }
 
   const query = queryDimension(option);
-  const link = query ? `/api/img/one/${filename}/download?${query.toString()}` : `/api/img/one/${filename}/download`;
+  const link = query
+    ? `/api/img/one/${filename}/download?${query.toString()}`
+    : `/api/img/one/${filename}/download`;
   const res = await API_SERVER.get(link, { responseType: 'blob' });
 
   const blob = new Blob([res.data]);
@@ -74,7 +84,10 @@ export async function getApiImgDownload(
 
 // ASPECT RATIO
 
-export type AspectRatioModel = { readonly value: number; readonly ratio: [number, number] };
+export type AspectRatioModel = {
+  readonly value: number;
+  readonly ratio: [number, number];
+};
 
 export const IMAGE_ASPECT_RATIO_LIST: AspectRatioModel[] = [
   { value: 1, ratio: [1, 1] },
@@ -99,7 +112,9 @@ export class ImagePositionModel {
 // COLOR PALLETE
 
 async function getApiImgPalette(filename: string): Promise<ColorPaletteData> {
-  const result = await API_SERVER.get<ColorPaletteData>(`/api/img/one/${filename}/palette`);
+  const result = await API_SERVER.get<ColorPaletteData>(
+    `/api/img/one/${filename}/palette`,
+  );
   return result.data;
 }
 
@@ -120,7 +135,9 @@ export class ColorPaletteModel {
   async getColorPalette(): Promise<Readonly<ColorPaletteData> | undefined> {
     if (this.data) return this.data;
 
-    const dataFetched = await getApiImgPalette(this.filename).catch((e: Error) => e);
+    const dataFetched = await getApiImgPalette(this.filename).catch(
+      (e: Error) => e,
+    );
     if (dataFetched instanceof Error) {
       console.error(dataFetched);
       this.data = undefined;
@@ -140,14 +157,21 @@ export abstract class ImageModel {
 
   isHovering: boolean = false;
 
-  abstract getSrc(width: number | undefined, height: number | undefined): Promise<string | undefined>;
+  abstract getSrc(
+    width: number | undefined,
+    height: number | undefined,
+  ): Promise<string | undefined>;
 
   getBestAspectRatio(): [number, number] | undefined {
-    if (this.holderPosition.width === 0 || this.holderPosition.height === 0) return;
+    if (this.holderPosition.width === 0 || this.holderPosition.height === 0)
+      return;
 
     const actualRatio = this.holderPosition.width / this.holderPosition.height;
     let bestMatch = IMAGE_ASPECT_RATIO_LIST.reduce((previous, current) => {
-      return Math.abs(current.value - actualRatio) < Math.abs(previous.value - actualRatio) ? current : previous;
+      return Math.abs(current.value - actualRatio) <
+        Math.abs(previous.value - actualRatio)
+        ? current
+        : previous;
     });
 
     return bestMatch.ratio;
@@ -201,7 +225,10 @@ export class ImagePathModel extends ImageModel {
     this.colorPalette = new ColorPaletteModel(filename);
   }
 
-  override async getSrc(width: number | undefined, height: number | undefined): Promise<string | undefined> {
+  override async getSrc(
+    width: number | undefined,
+    height: number | undefined,
+  ): Promise<string | undefined> {
     return urlServerFilename(this.fullPath, { width, height }).toString();
   }
 }
@@ -222,7 +249,10 @@ export class ImageBlobModel extends ImageModel {
     this.colorPalette = new ColorPaletteModel(filename);
   }
 
-  override async getSrc(width: number | undefined, height: number | undefined): Promise<string | undefined> {
+  override async getSrc(
+    width: number | undefined,
+    height: number | undefined,
+  ): Promise<string | undefined> {
     const url = urlServerFilename(this.fullPath, { width, height }).toString();
     const response = await API_SERVER.get(url, { responseType: 'blob' });
     return URL.createObjectURL(response.data);

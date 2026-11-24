@@ -5,7 +5,8 @@ import { API_SERVER } from '@/api/api';
 import type { ImagePathData } from '@/module/image.model';
 
 async function getApiImgList(): Promise<ImagePathData[]> {
-  const result = await API_SERVER.get<MaybeUndefined<ImagePathData[]>>('/api/img/list');
+  const result =
+    await API_SERVER.get<MaybeUndefined<ImagePathData[]>>('/api/img/list');
   return optArray(result.data);
 }
 
@@ -16,7 +17,9 @@ export function useServerFilenames() {
 
   async function fetchFilenames(): Promise<void> {
     const list = await getApiImgList();
-    filenames.value = list.map((item) => item.filename).filter((filename) => typeof filename === 'string');
+    filenames.value = list
+      .map((item) => item.filename)
+      .filter((filename) => typeof filename === 'string');
     status.value = 'success';
   }
 

@@ -10,7 +10,9 @@ import PageBodyV2 from '@/components/page-v2/PageBody-v2.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
-const isDisabled = computed(() => authStore.isInitializing || authStore.isLogging);
+const isDisabled = computed(
+  () => authStore.isInitializing || authStore.isLogging,
+);
 
 const username = ref('');
 const password = ref('');
@@ -38,12 +40,23 @@ onMounted(async () => {
 
         <div class="input-group">
           <label>Password</label>
-          <input v-model="password" type="password" :disabled="isDisabled" @keyup.enter="() => handleSubmit()" />
+          <input
+            v-model="password"
+            type="password"
+            :disabled="isDisabled"
+            @keyup.enter="() => handleSubmit()"
+          />
         </div>
 
-        <span v-if="authStore.error?.length" class="error-msg">{{ authStore.error }}</span>
+        <span v-if="authStore.error?.length" class="error-msg">
+          {{ authStore.error }}
+        </span>
 
-        <button class="login-sign-in" :disabled="isDisabled" @click="() => handleSubmit()">
+        <button
+          class="login-sign-in"
+          :disabled="isDisabled"
+          @click="() => handleSubmit()"
+        >
           {{ authStore.isLogging ? 'Authenticating...' : 'Sign In' }}
         </button>
       </div>

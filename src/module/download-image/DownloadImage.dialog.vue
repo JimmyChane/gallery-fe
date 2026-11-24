@@ -2,18 +2,34 @@
 import type { DialogProps } from '@chanzor/vue-overlay';
 import { type Component, computed, ref, watch } from 'vue';
 
-import { type ImageBlobModel, type ImagePathModel, getApiImgDownload } from '@/module/image.model';
+import {
+  type ImageBlobModel,
+  type ImagePathModel,
+  getApiImgDownload,
+} from '@/module/image.model';
 
 import CloseIcon from '@/components/icon/Close.icon.vue';
 import CustomIcon from '@/components/icon/Custom.icon.vue';
 import PreviewIcon from '@/components/icon/Preview.icon.vue';
 
-export type DownloadImageDialogProps = { model: ImageBlobModel | ImagePathModel };
+export type DownloadImageDialogProps = {
+  model: ImageBlobModel | ImagePathModel;
+};
 
 const { dialogPopup } = defineProps<DialogProps<DownloadImageDialogProps>>();
 
-type FileFormatType = Readonly<{ id: string; label: string; hint: string; ext: string; mime: string }>;
-type DimensionPresetType = Readonly<{ id: PresetType; label: string; icon?: Component }>;
+type FileFormatType = Readonly<{
+  id: string;
+  label: string;
+  hint: string;
+  ext: string;
+  mime: string;
+}>;
+type DimensionPresetType = Readonly<{
+  id: PresetType;
+  label: string;
+  icon?: Component;
+}>;
 
 const FORMAT_JPG = {
   id: 'jpg',
@@ -24,11 +40,31 @@ const FORMAT_JPG = {
 } satisfies FileFormatType;
 const formats = [
   FORMAT_JPG,
-  { id: 'png', label: 'PNG', hint: 'Lossless / Optimized encoding', ext: 'png', mime: 'image/png' },
-  { id: 'webp', label: 'WebP', hint: 'High efficiency / Modern web', ext: 'webp', mime: 'image/webp' },
+  {
+    id: 'png',
+    label: 'PNG',
+    hint: 'Lossless / Optimized encoding',
+    ext: 'png',
+    mime: 'image/png',
+  },
+  {
+    id: 'webp',
+    label: 'WebP',
+    hint: 'High efficiency / Modern web',
+    ext: 'webp',
+    mime: 'image/webp',
+  },
 ] satisfies FileFormatType[];
-const DIMENSION_ORIGINAL = { id: 'original', label: 'Original', icon: PreviewIcon } satisfies DimensionPresetType;
-const DIEMNSION_CUSTOM = { id: 'custom', label: 'Custom', icon: CustomIcon } satisfies DimensionPresetType;
+const DIMENSION_ORIGINAL = {
+  id: 'original',
+  label: 'Original',
+  icon: PreviewIcon,
+} satisfies DimensionPresetType;
+const DIEMNSION_CUSTOM = {
+  id: 'custom',
+  label: 'Custom',
+  icon: CustomIcon,
+} satisfies DimensionPresetType;
 const dimensions = [
   DIMENSION_ORIGINAL,
   { id: '1080p', label: '1080p (1920x1080)' },
@@ -139,7 +175,9 @@ async function triggerDownload() {
 
       switch (selectedPreset.value.id) {
         case 'original':
-          await getApiImgDownload(model.filename, { format: selectedFormat.value.id });
+          await getApiImgDownload(model.filename, {
+            format: selectedFormat.value.id,
+          });
           break;
         case '1080p':
         case '720p':
@@ -175,7 +213,12 @@ async function triggerDownload() {
         <h2 class="dialog-title">Download Asset</h2>
       </div>
 
-      <button type="button" class="dialog-close-btn" aria-label="Close dialog" @click="() => dialogPopup.close()">
+      <button
+        type="button"
+        class="dialog-close-btn"
+        aria-label="Close dialog"
+        @click="() => dialogPopup.close()"
+      >
         <CloseIcon />
       </button>
     </div>
@@ -197,7 +240,9 @@ async function triggerDownload() {
     <div class="section-group">
       <div class="section-header">
         <span class="section-label">FILE FORMAT</span>
-        <span v-if="currentFormatInfo" class="section-hint">{{ currentFormatInfo.hint }}</span>
+        <span v-if="currentFormatInfo" class="section-hint">
+          {{ currentFormatInfo.hint }}
+        </span>
       </div>
 
       <div class="format-segmented-control">
@@ -238,7 +283,14 @@ async function triggerDownload() {
       <div class="dimension-field">
         <label class="field-label">WIDTH</label>
         <div class="input-container">
-          <input type="number" class="dimension-input" :value="width" min="1" max="10000" @input="onWidthInput" />
+          <input
+            type="number"
+            class="dimension-input"
+            :value="width"
+            min="1"
+            max="10000"
+            @input="onWidthInput"
+          />
           <span class="input-suffix">PX</span>
         </div>
       </div>
@@ -246,7 +298,12 @@ async function triggerDownload() {
       <label class="lock-ratio-toggle">
         <input type="checkbox" v-model="lockRatio" class="ratio-checkbox" />
         <span class="checkbox-custom">
-          <svg v-if="lockRatio" viewBox="0 0 24 24" class="check-svg" fill="currentColor">
+          <svg
+            v-if="lockRatio"
+            viewBox="0 0 24 24"
+            class="check-svg"
+            fill="currentColor"
+          >
             <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
           </svg>
         </span>
@@ -256,7 +313,14 @@ async function triggerDownload() {
       <div class="dimension-field">
         <label class="field-label">HEIGHT</label>
         <div class="input-container">
-          <input type="number" class="dimension-input" :value="height" min="1" max="10000" @input="onHeightInput" />
+          <input
+            type="number"
+            class="dimension-input"
+            :value="height"
+            min="1"
+            max="10000"
+            @input="onHeightInput"
+          />
           <span class="input-suffix">PX</span>
         </div>
       </div>
@@ -266,9 +330,20 @@ async function triggerDownload() {
       <div class="footer-action-left"></div>
 
       <div class="footer-action-right">
-        <button type="button" class="btn-cancel" @click="() => dialogPopup.close()">Cancel</button>
+        <button
+          type="button"
+          class="btn-cancel"
+          @click="() => dialogPopup.close()"
+        >
+          Cancel
+        </button>
 
-        <button type="button" class="btn-download" :disabled="isDownloading" @click="triggerDownload">
+        <button
+          type="button"
+          class="btn-download"
+          :disabled="isDownloading"
+          @click="triggerDownload"
+        >
           <svg viewBox="0 0 24 24" class="btn-icon" fill="currentColor">
             <path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z" />
           </svg>
