@@ -2,13 +2,13 @@
 import { waitFrameMs } from '@chanzor/vue-utils';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-import { useServerFilenamePagable } from '@/composables/useServerFilenamePagable';
+import { useImagePagableApi } from '@/composables/useImagePagableApi.ts';
 import { ImageBlobModel, type ImageModel } from '@/module/image.model.ts';
 
 import SlideshowView from './components/Slideshow.view.vue';
 
 const { list, pagination, status, error, refresh, nextPage } =
-  useServerFilenamePagable();
+  useImagePagableApi();
 
 const errorMessage = computed(() =>
   error.value ? error.value.message || 'Unknown error' : undefined,

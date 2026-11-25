@@ -10,7 +10,7 @@ async function apiGet() {
   return optArray(res.data);
 }
 
-export function useServerFilenames() {
+export function useImageListApi() {
   const list = ref<string[]>([]);
 
   const status = ref<'error' | 'idle' | 'pending' | 'success'>();

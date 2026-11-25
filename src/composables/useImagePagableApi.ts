@@ -38,7 +38,7 @@ type PaginationType = {
 
 const queue = new LinearQueueHandler();
 
-export function useServerFilenamePagable(option?: {
+export function useImagePagableApi(option?: {
   /** @default 10 */
   limit: number;
 }) {
