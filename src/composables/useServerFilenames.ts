@@ -4,20 +4,21 @@ import { ref } from 'vue';
 import { API_SERVER } from '@/api/api';
 import type { ImagePathData } from '@/module/image.model';
 
-async function getApiImgList(): Promise<ImagePathData[]> {
-  const result =
+async function apiGet() {
+  const res =
     await API_SERVER.get<MaybeUndefined<ImagePathData[]>>('/api/img/list');
-  return optArray(result.data);
+  return optArray(res.data);
 }
 
 export function useServerFilenames() {
-  const filenames = ref<string[]>([]);
+  const list = ref<string[]>([]);
+
   const status = ref<'error' | 'idle' | 'pending' | 'success'>();
   const error = ref<Error>();
 
-  async function fetchFilenames(): Promise<void> {
-    const list = await getApiImgList();
-    filenames.value = list
+  async function fetch(): Promise<void> {
+    const data = await apiGet();
+    list.value = data
       .map((item) => item.filename)
       .filter((filename) => typeof filename === 'string');
     status.value = 'success';
@@ -25,11 +26,11 @@ export function useServerFilenames() {
 
   async function refresh(): Promise<void> {
     status.value = 'pending';
-    await fetchFilenames().catch((e) => {
+    await fetch().catch((e) => {
       error.value = e;
       status.value = 'error';
     });
   }
 
-  return { filenames, status, error, refresh };
+  return { list, status, error, refresh };
 }

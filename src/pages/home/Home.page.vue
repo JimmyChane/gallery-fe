@@ -2,40 +2,55 @@
 import { waitFrameMs } from '@chanzor/vue-utils';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 
-import { useServerFilenames } from '@/composables/useServerFilenames';
+import { useServerFilenamePagable } from '@/composables/useServerFilenamePagable';
 import { ImageBlobModel, type ImageModel } from '@/module/image.model.ts';
 
 import SlideshowView from './components/Slideshow.view.vue';
 
-const { filenames, error, refresh } = useServerFilenames();
-const errorMessage = computed(() => {
-  if (error.value) return error.value.message || 'Unknown error';
-});
+const { list, pagination, status, error, refresh, nextPage } =
+  useServerFilenamePagable();
+
+const errorMessage = computed(() =>
+  error.value ? error.value.message || 'Unknown error' : undefined,
+);
+
+const isLoading = computed(
+  () => status.value === 'pending' && imageModels.value.length === 0,
+);
 
 const imageModels = ref<ImageModel[]>([]);
-
-const push = (filename: string): void => {
-  imageModels.value.push(new ImageBlobModel(filename));
-};
-
 let loadTime = 0;
-const isLoading = ref(false);
 
-onMounted(async () => {
-  const now = (loadTime = Date.now());
-
-  isLoading.value = true;
-  await refresh();
-  if (now !== loadTime) return;
-  isLoading.value = false;
-
-  const shuffledFilenames = filenames.value.sort(() => Math.random() - 0.5);
-  for (const filename of shuffledFilenames) {
-    push(filename);
+async function enqueuePage(isCancelled: () => boolean): Promise<boolean> {
+  const shuffled = [...list.value].sort(() => Math.random() - 0.5);
+  for (const filename of shuffled) {
+    imageModels.value.push(new ImageBlobModel(filename));
     await waitFrameMs(100);
-    if (now !== loadTime) return;
+    if (isCancelled()) return false;
   }
-});
+  return true;
+}
+
+async function loadData(): Promise<void> {
+  const now = (loadTime = Date.now());
+  const isCancelled = () => now !== loadTime;
+
+  imageModels.value = [];
+  error.value = undefined;
+
+  await refresh({ page: 1 });
+  if (isCancelled() || error.value) return;
+
+  if (!(await enqueuePage(isCancelled))) return;
+
+  while (pagination.value?.hasNext) {
+    await nextPage();
+    if (isCancelled() || error.value) return;
+    if (!(await enqueuePage(isCancelled))) return;
+  }
+}
+
+onMounted(loadData);
 
 onUnmounted(() => {
   imageModels.value = [];
@@ -45,9 +60,12 @@ onUnmounted(() => {
 
 <template>
   <div class="home-page">
-    <div v-if="errorMessage?.length" class="home-page-view">
+    <div
+      v-if="errorMessage?.length && imageModels.length === 0"
+      class="home-page-view"
+    >
       <span>{{ errorMessage }}</span>
-      <button @click="() => refresh()">Try Again</button>
+      <button @click="loadData">Try Again</button>
     </div>
     <div v-else-if="imageModels.length > 0" class="home-page-view">
       <SlideshowView :models="imageModels" />
@@ -61,9 +79,7 @@ onUnmounted(() => {
 .home-page {
   width: 100%;
   height: 100%;
-
   display: flex;
-
   background: linear-gradient(90deg, #333333 0%, #141c1d 100%);
 
   .home-page-view {
